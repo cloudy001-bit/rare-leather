@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = config('SECRET_KEY', default='your-dev-secret-key')
 DEBUG = False
-ALLOWED_HOSTS = ['127.0.0.1', 'rare-leather.up.railway.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'rare-leather-production.up.railway.app']
 
 # APPS
 INSTALLED_APPS = [
