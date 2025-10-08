@@ -6,10 +6,12 @@ cloudinary==1.44.1
 Django==5.2.7
 django-cloudinary-storage==0.3.0
 django_paystack==1.0.0
+gunicorn==23.0.0
 h11==0.16.0
 httpcore==1.0.9
 httpx==0.28.1
 idna==3.10
+packaging==25.0
 pillow==11.3.0
 pypaystack2==2.0.3
 requests==2.32.5
