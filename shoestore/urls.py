@@ -43,7 +43,8 @@ urlpatterns = [
 from django.conf import settings
 from django.conf.urls.static import static
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler400 = 'shoestore.views.bad_request'
 handler403 = 'shoestore.views.permission_denied'
