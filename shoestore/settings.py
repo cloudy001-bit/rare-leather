@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django.contrib.humanize',
-    'storages',  # ✅ Added for ImageKit
+    'imagekitio',  # ✅ ImageKit SDK
     'accounts',
     'orders',
     'cart',
@@ -104,17 +104,17 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# MEDIA STORAGE (ImageKit)
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_ACCESS_KEY_ID = os.environ.get('IMAGEKIT_PUBLIC_KEY')
-AWS_SECRET_ACCESS_KEY = os.environ.get('IMAGEKIT_PRIVATE_KEY')
-AWS_STORAGE_BUCKET_NAME = 'rare-leather'  # can be any placeholder name
-AWS_S3_ENDPOINT_URL = f"https://ik.imagekit.io/{os.environ.get('IMAGEKIT_ID')}/"
-AWS_S3_REGION_NAME = None  # not used for ImageKit
-AWS_QUERYSTRING_AUTH = False
-AWS_DEFAULT_ACL = None
+# ✅ ImageKit Setup
+IMAGEKIT = {
+    'PRIVATE_KEY': os.getenv('IMAGEKIT_PRIVATE_KEY'),
+    'PUBLIC_KEY': os.getenv('IMAGEKIT_PUBLIC_KEY'),
+    'URL_ENDPOINT': os.getenv('IMAGEKIT_URL_ENDPOINT'),
+}
 
-MEDIA_URL = AWS_S3_ENDPOINT_URL
+DEFAULT_FILE_STORAGE = 'django_imagekitio.storage.ImageKitStorage'
+
+MEDIA_URL = os.getenv('IMAGEKIT_URL_ENDPOINT', '') + '/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
