@@ -23,14 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@_a)ognh0tdq+98_=_6o@h%3vlk=*n7&w76swn+&qzs(#$efs+'
+# SECRET_KEY = 'django-insecure-@_a)ognh0tdq+98_=_6o@h%3vlk=*n7&w76swn+&qzs(#$efs+'
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = False
+# DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = ['127.0.0.1']
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'rare-leather.onrender.com']
 
 
 # Application definition
@@ -72,24 +73,41 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = 'omanmannsh@gmail.com'
-EMAIL_HOST_PASSWORD = 'jwoephbthruvgvhg'
-DEFAULT_FROM_EMAIL = "rareleatherteam@rareleather.com.ng"
+# os.environ.get("DJANGO_SECRET_KEY")
+# EMAIL_HOST_USER = 'omanmannsh@gmail.com'
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+
+# EMAIL_HOST_PASSWORD = 'jwoephbthruvgvhg'
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # PAYSTACK SETTINGS
-PAYSTACK_PUBLIC_KEY = "pk_test_bb366e78bdcaa56669d89b9b7296f28fce0bb9db"
-PAYSTACK_SECRET_KEY = "sk_test_324ee64ffcbe018d7d2f8adfb9c5a9a8c6a7d6dc"
-PAYSTACK_CALLBACK_URL = "http://127.0.0.1:8000/payments/verify/"
+# PAYSTACK_PUBLIC_KEY = "pk_test_bb366e78bdcaa56669d89b9b7296f28fce0bb9db"
+PAYSTACK_PUBLIC_KEY = os.environ.get("PAYSTACK_PUBLIC_KEY")
+
+# PAYSTACK_SECRET_KEY = "sk_test_324ee64ffcbe018d7d2f8adfb9c5a9a8c6a7d6dc"
+PAYSTACK_SECRET_KEY = os.environ.get("PAYSTACK_SECRET_KEY")
+
+
+# PAYSTACK_CALLBACK_URL = "http://127.0.0.1:8000/payments/verify/"
+PAYSTACK_CALLBACK_URL = os.environ.get("PAYSTACK_CALLBACK_URL")
+
+
 
 WEBSITE_DOMAIN_DASHBOARD = "http://127.0.0.1:8000/account/dashboard/"
 
-ADMIN_EMAIL = "faboyawals6@gmail.com"
+# ADMIN_EMAIL = "faboyawals6@gmail.com"
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
 
 SITE_NAME = "Rare Leather"
 
 # Telegram bot settings
-TELEGRAM_BOT_TOKEN = "8464394549:AAEmzoS-w6b44wMnBo5Y1ZTa1-xDKCkGwuA"
-TELEGRAM_CHAT_ID = "1611431776"
+# TELEGRAM_BOT_TOKEN = "8464394549:AAEmzoS-w6b44wMnBo5Y1ZTa1-xDKCkGwuA"
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+
+# TELEGRAM_CHAT_ID = "1611431776"
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
 
 
