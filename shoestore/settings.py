@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
 SECRET_KEY = config('SECRET_KEY', default='your-dev-secret-key')
-DEBUG = os.environ.get("DEBUG")
+DEBUG = False
 ALLOWED_HOSTS = ['127.0.0.1', 'rare-leather-production.up.railway.app']
 
 # APPS
@@ -100,6 +100,11 @@ DATABASES = {
         ssl_require=True
     )
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://rare-leather-production.up.railway.app',
+    # 'https://www.yourcustomdomain.com',
+]
 
 # STATIC FILES
 STATIC_URL = '/static/'
