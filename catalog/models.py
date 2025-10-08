@@ -4,6 +4,10 @@
 
 from django.db import models
 from django.utils.text import slugify
+from imagekitio import ImageKitStorage
+
+# Create an ImageKit storage instance
+imagekit_storage = ImageKitStorage()
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -58,7 +62,7 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='products/')
+    image = models.ImageField(upload_to='products/', storage=imagekit_storage)
     alt_text = models.CharField(max_length=150, blank=True)
 
     def __str__(self):
