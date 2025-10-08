@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django.contrib.humanize',
+    'storages',  # ✅ Added for ImageKit
     'accounts',
     'orders',
     'cart',
@@ -103,23 +104,24 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# MEDIA FILES (PERSISTENT STORAGE)
-# 👇 This is the key change
-MEDIA_URL = '/media/'
+# MEDIA STORAGE (ImageKit)
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_ACCESS_KEY_ID = os.environ.get('IMAGEKIT_PUBLIC_KEY')
+AWS_SECRET_ACCESS_KEY = os.environ.get('IMAGEKIT_PRIVATE_KEY')
+AWS_STORAGE_BUCKET_NAME = 'rare-leather'  # can be any placeholder name
+AWS_S3_ENDPOINT_URL = f"https://ik.imagekit.io/{os.environ.get('IMAGEKIT_ID')}/"
+AWS_S3_REGION_NAME = None  # not used for ImageKit
+AWS_QUERYSTRING_AUTH = False
+AWS_DEFAULT_ACL = None
 
-# Render mounts persistent disks to /var/media (you set this in the Render dashboard)
-MEDIA_ROOT = Path('/var/media/')
-
-# If you’re running locally, fall back to the local media folder
-if not os.path.exists(MEDIA_ROOT):
-    MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = AWS_S3_ENDPOINT_URL
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 LANGUAGE_CODE = 'en-us'
