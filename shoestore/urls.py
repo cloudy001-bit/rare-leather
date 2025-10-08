@@ -45,6 +45,9 @@ from django.conf.urls.static import static
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # 👇 allow serving media manually on Render
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler400 = 'shoestore.views.bad_request'
 handler403 = 'shoestore.views.permission_denied'
