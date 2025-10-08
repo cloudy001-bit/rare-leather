@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+
+<!-- Brand Font -->
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background-color: #0f0f0f;
+    color: #e0e0e0;
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .dashboard-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    background: #1a1a1a;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 20px;
+    padding: 40px 50px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+  }
+
+  .dashboard-header {
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+  }
+
+  .dashboard-header h2 {
+    color: #d4af37;
+    font-weight: 600;
+    font-size: 1.6rem;
+    letter-spacing: 0.3px;
+  }
+
+  .dashboard-header p {
+    color: #aaa;
+    font-size: 0.95rem;
+  }
+
+  h4 {
+    color: #d4af37;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  .order-card {
+    background: #121212;
+    border: 1px solid rgba(212, 175, 55, 0.12);
+    border-radius: 14px;
+    margin-bottom: 35px;
+    transition: all 0.3s ease;
+  }
+
+  .order-card:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .order-header {
+    background: #181818;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    padding: 1rem 1.5rem;
+    border-radius: 14px 14px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .order-header strong {
+    color: #d4af37;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .order-header small {
+    color: #999;
+    display: block;
+  }
+
+  .order-body {
+    padding: 1.5rem;
+  }
+
+  /* Badges */
+  .badge {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+
+  .badge-pending { background: #b8860b; color: #000; }
+  .badge-processing { background: #007bff; color: #fff; }
+  .badge-completed { background: #28a745; color: #fff; }
+  .badge-cancelled { background: #dc3545; color: #fff; }
+  .badge-failed { background: #c82333; color: #fff; }
+  .badge-unpaid { background: #ffc107; color: #000; }
+
+  /* Buttons */
+  .order-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .order-actions a {
+    text-decoration: none !important;
+  }
+
+  .btn-gold {
+    background: transparent;
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-gold:hover {
+    background: #d4af37;
+    color: #0f0f0f;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  }
+
+  .btn-danger-outline {
+    background: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-danger-outline:hover {
+    background: #dc3545;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
+  }
+
+  /* Order Table */
+  .order-table {
+    margin-top: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .order-table thead {
+    background: #1e1e1e;
+    color: #d4af37;
+    font-weight: 600;
+  }
+
+  .order-table td, .order-table th {
+    padding: 12px 10px;
+    color: #ccc;
+    font-size: 0.92rem;
+  }
+
+  .order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 1.5rem;
+    border-top: 1px solid rgba(212, 175, 55, 0.1);
+    padding-top: 1rem;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .order-footer h5 {
+    color: #d4af37;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 0;
+    color: #777;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 30px 25px;
+    }
+
+    .order-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .order-actions {
+      margin-top: 8px;
+    }
+
+    .order-footer {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .order-table th, .order-table td {
+      font-size: 0.85rem;
+    }
+  }
+
+</style>
+
+<div class="dashboard-container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+    <div>
+      <h2 style="margin-bottom: 4px;">Welcome, {{ user.full_name|default:user.email }} 👋</h2>
+      <p style="margin: 0; color: #aaa; font-size: 0.95rem;">Your Rare Leather account dashboard</p>
+    </div>
+
+    <!-- {% if not user.is_verified or not user.has_usable_password %}
+      <div>
+        <a href="{% url 'accounts:set_password' %}" 
+           class="btn-gold" 
+           style="text-decoration: none; display: inline-block;">
+          Set Your Password
+        </a>
+      </div>
+    {% endif %}
+     -->
+  </div>
+
+  <h4>Your Orders</h4>
+
+  {% if orders %}
+    {% for order in orders %}
+      <div class="order-card">
+        <div class="order-header">
+          <div>
+            <strong>Order #{{ order.id }}</strong>
+            <small>{{ order.created_at|date:"M d, Y - h:i A" }}</small>
+          </div>
+
+          <div class="order-actions">
+            {% if order.payment_status != "paid" and order.status != "cancelled" %}
+              <a href="{% url 'orders:initialize_payment' order.id %}" class="btn-gold">
+                Complete Payment
+              </a>
+              <a href="{% url 'orders:cancel_order' order.id %}"
+                 class="btn-danger-outline"
+                 onclick="return confirm('Are you sure you want to cancel this order?')">
+                 Cancel Order
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="order-body">
+          <div class="mb-3 d-flex justify-content-between flex-wrap align-items-center">
+            <div>
+              <strong>Status:</strong>
+              {% if order.status == "pending" %}
+                <span class="badge badge-pending">{{ order.status|title }}</span>
+              {% elif order.status == "processing" %}
+                <span class="badge badge-processing">{{ order.status|title }}</span>
+              {% elif order.status == "completed" %}
+                <span class="badge badge-completed">{{ order.status|title }}</span>
+              {% elif order.status == "cancelled" %}
+                <span class="badge badge-cancelled">{{ order.status|title }}</span>
+              {% else %}
+                <span class="badge badge-secondary">{{ order.status|title }}</span>
+              {% endif %}
+
+              <strong class="ms-3">Payment:</strong>
+              {% if order.payment_status == "paid" %}
+                <span class="badge badge-completed">Paid</span>
+              {% elif order.payment_status == "failed" %}
+                <span class="badge badge-failed">Failed</span>
+              {% elif order.payment_status == "cancelled" %}
+                <span class="badge badge-cancelled">Cancelled</span>
+              {% else %}
+                <span class="badge badge-unpaid">Unpaid</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <table class="table order-table table-borderless align-middle">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Size</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                  <td>{{ item.product.title }}</td>
+                  <td>{{ item.size }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>₦{{ item.price|intcomma }}</td>
+                  <td>₦{{ item.get_subtotal|intcomma }}</td>
+                </tr>
+                {% endfor %}
+
+                <!-- Delivery fee row -->
+                <tr>
+                  <td colspan="4" style="text-align:right; font-weight:600;">Delivery Fee:</td>
+                  <td>₦{{ delivery_fee|intcomma }}</td>
+                </tr>
+              </tbody>
+          </table>
+
+          <div class="order-footer">
+            <div>
+              <strong>Shipping:</strong><br>
+              {{ order.address }}<br>
+              {{ order.city }}<br>
+              <small>{{ order.phone }}</small>
+            </div>
+            <div class="text-end">
+              <h5>Total: ₦{{ order.total_price|intcomma }}</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <h5>No orders yet.</h5>
+      <p>When you make a purchase, your order history will appear here.</p>
+    </div>
+  {% endif %}
+</div>
+
+{% include 'includes/footer.html' %}
+
+{% endblock %}

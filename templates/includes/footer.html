@@ -1,0 +1,106 @@
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* Footer styling */
+.footer {
+  background-color: #1a1a1a;
+  color: #ccc;
+  font-family: 'Urbanist', sans-serif;
+  padding: 40px 20px;
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.footer-section h4 {
+  color: #d4af37;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.footer-section p,
+.footer-section a {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  display: block;
+  transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+  color: #d4af37;
+}
+
+.footer-bottom {
+  text-align: center;
+  color: #777;
+  font-size: 0.85rem;
+  margin-top: 30px;
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
+  padding-top: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-section">
+      <h4>Rare Leather</h4>
+      <p>Crafted premium leather shoes made in Nigeria. Style, comfort, and luxury in every step.</p>
+    </div>
+
+    <div class="footer-section">
+      <h4>Quick Links</h4>
+      <a href="{% url 'catalog:product_list' %}">Shop</a>
+      <a href="{% url 'accounts:dashboard' %}">My Account</a>
+      <a href="{% url 'about' %}">About Us</a>
+      <a href="{% url 'contact' %}">Contact</a>
+    </div>
+
+    <div class="footer-section">
+      <h4>Contact</h4>
+      <p>Email: support@rareleather.ng</p>
+      <p>Phone: +234 800 123 4567</p>
+      <p>Address: Lagos, Nigeria</p>
+    </div>
+
+    <div class="footer-section">
+      <h4>Follow Us</h4>
+      {% if site_settings.facebook_url %}
+        <a href="{{ site_settings.facebook_url }}" target="_blank">Facebook</a>
+      {% endif %}
+      {% if site_settings.instagram_url %}
+        <a href="{{ site_settings.instagram_url }}" target="_blank">Instagram</a>
+      {% endif %}
+      {% if site_settings.twitter_url %}
+        <a href="{{ site_settings.instagram_url }}" target="_blank">Instagram</a>
+      {% endif %}
+      {% if site_settings.linkedin_url %}
+        <a href="{{ site_settings.instagram_url }}" target="_blank">Instagram</a>
+      {% endif %}
+      {% if site_settings.youtube_url %}
+        <a href="{{ site_settings.instagram_url }}" target="_blank">Instagram</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    &copy; {{ now.year }} Rare Leather. All rights reserved.
+  </div>
+</footer>

@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ product.title }}{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background-color: #0f0f0f;
+    color: #e0e0e0;
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .product-container {
+    max-width: 900px;
+    margin: 50px auto;
+    background: #1a1a1a;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 20px;
+    padding: 30px 40px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.4);
+  }
+
+  .product-title {
+    color: #d4af37;
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+  }
+
+  .product-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .product-images img {
+    border-radius: 10px;
+    max-width: 200px;
+    object-fit: cover;
+    border: 1px solid rgba(212,175,55,0.2);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  .product-images img:hover {
+    transform: scale(1.05);
+  }
+
+  .product-price {
+    color: #d4af37;
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+
+  .price-note {
+    color: #ffc107;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+  }
+
+  .product-description {
+    margin-bottom: 25px;
+    line-height: 1.6;
+    color: #ccc;
+  }
+
+  .product-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+
+  .product-form select,
+  .product-form input {
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #1a1a1a;
+    color: #e0e0e0;
+    padding: 6px 10px;
+  }
+
+  .product-form button {
+    background: transparent;
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .product-form button:hover {
+    background: #d4af37;
+    color: #0f0f0f;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  }
+
+  /* Modal for full image */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+  }
+
+  .modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 80%;
+    border-radius: 10px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .modal-close:hover {
+    color: #d4af37;
+  }
+
+  @media (max-width: 768px) {
+    .product-images {
+      justify-content: center;
+    }
+
+    .product-images img {
+      max-width: 150px;
+    }
+  }
+</style>
+
+<div class="product-container">
+  <h2 class="product-title">{{ product.title }}</h2>
+
+  {% if product.images.all %}
+    <div class="product-images">
+      {% for img in product.images.all %}
+        <img src="{{ img.image.url }}" alt="{{ img.alt_text }}" class="clickable-image">
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <p class="product-price" id="product-price">₦{{ product.price_ngn|intcomma }}</p>
+
+  {% if product.extra_fee_threshold %}
+    <p class="price-note">
+      ⚠️ There will be an increment of price for sizes above {{ product.extra_fee_threshold }} for this product.
+    </p>
+  {% endif %}
+
+  <p class="product-description">{{ product.description }}</p>
+
+  <form action="{% url 'cart:cart_add' product.id %}" method="post" class="product-form" id="add-to-cart-form">
+    {% csrf_token %}
+
+    <label for="size">Select Size:</label>
+    <select name="size" id="size">
+      {% for size in size_range %}
+        <option value="{{ size }}">{{ size }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="quantity">Quantity:</label>
+    <input type="number" name="quantity" id="quantity" value="1" min="1">
+
+    <button type="submit">Add to Cart</button>
+  </form>
+</div>
+
+<!-- Modal -->
+<div id="imageModal" class="modal">
+  <span class="modal-close">&times;</span>
+  <img class="modal-content" id="modalImg">
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Size price logic
+  const sizeSelect = document.getElementById('size');
+  const priceTag = document.getElementById('product-price');
+
+  const basePrice = parseFloat("{{ product.price_ngn|default:0 }}");
+  const extraThreshold = parseFloat("{{ product.large_size_threshold|default:0 }}");
+  const extraFee = parseFloat("{{ product.large_size_extra_fee|default:0 }}");
+
+  function updatePrice() {
+    const selectedSize = parseFloat(sizeSelect.value);
+    let displayPrice = basePrice;
+
+    if (selectedSize > extraThreshold) {
+      displayPrice += extraFee;
+    }
+
+    priceTag.textContent = '₦' + displayPrice.toLocaleString();
+  }
+
+  sizeSelect.addEventListener('change', updatePrice);
+  updatePrice();
+
+  // Image modal logic
+  const modal = document.getElementById('imageModal');
+  const modalImg = document.getElementById("modalImg");
+  const modalClose = document.getElementsByClassName("modal-close")[0];
+
+  document.querySelectorAll('.clickable-image').forEach(img => {
+    img.onclick = function() {
+      modal.style.display = "block";
+      modalImg.src = this.src;
+    }
+  });
+
+  modalClose.onclick = function() {
+    modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+});
+</script>
+
+{% include 'includes/footer.html' %}
+
+{% endblock %}

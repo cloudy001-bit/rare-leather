@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Rare Leather – Home{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background-color: #0f0f0f;
+    color: #e0e0e0;
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .hero {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("{% static 'images/hero-bg.jpg' %}") center/cover no-repeat;
+    padding: 120px 20px 80px;
+    text-align: center;
+    color: #d4af37;
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: #f0e6c2;
+    margin-bottom: 30px;
+  }
+
+  .btn-hero {
+    background: transparent;
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-hero:hover {
+    background: #d4af37;
+    color: #0f0f0f;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+  }
+
+  .section {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 20px;
+  }
+
+  .section h2 {
+    color: #d4af37;
+    font-weight: 600;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .section p {
+    color: #ccc;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .featured-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .product-card {
+    background: #1a1a1a;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 16px;
+    padding: 15px;
+    width: 220px;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .product-card:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+  }
+
+  .product-card img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+
+  .product-card h3 {
+    color: #d4af37;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+  }
+
+  .product-card p {
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+
+  .btn-product {
+    background: transparent;
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-product:hover {
+    background: #d4af37;
+    color: #0f0f0f;
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+  }
+
+  .highlights {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 40px;
+  }
+
+  .highlight {
+    background: #1a1a1a;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    border-radius: 14px;
+    padding: 20px;
+    flex: 1;
+    min-width: 250px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .highlight:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .highlight h4 {
+    color: #d4af37;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .highlight p {
+    color: #ccc;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2.2rem;
+    }
+
+    .featured-products {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .highlights {
+      flex-direction: column;
+      gap: 20px;
+    }
+  }
+</style>
+
+<!-- Hero Section -->
+<section class="hero">
+  <h1>Step Into Luxury Leather</h1>
+  <p>Nigerian leather with timeless elegance and unmatched quality.</p>
+  <a href="{% url 'catalog:product_list' %}" class="btn-hero">Shop the Collection</a>
+</section>
+
+<!-- Featured Products -->
+<section class="section">
+  <h2>Featured Products</h2>
+  <p>Discover some of our most popular designs, carefully crafted for style and comfort.</p>
+  <div class="featured-products">
+    {% for product in featured_products %}
+      <div class="product-card">
+        {% if product.images.first %}
+          <img src="{{ product.images.first.image.url }}" alt="{{ product.title }}">
+        {% else %}
+          <img src="{% static 'images/product-placeholder.png' %}" alt="No Image">
+        {% endif %}
+        <h3>{{ product.title }}</h3>
+        <p>₦{{ product.price_ngn|intcomma }}</p>
+        <a href="{% url 'catalog:product_detail' product.slug %}" class="btn-product">View Details</a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Highlights / Insights -->
+<section class="section">
+  <h2>Why Choose Rare Leather?</h2>
+  <p>Quality, craftsmanship, and style that stands out in every step.</p>
+  <div class="highlights">
+    <div class="highlight">
+      <h4>Premium Craftsmanship</h4>
+      <p>Every pair is handcrafted with precision and care by skilled artisans using the finest materials.</p>
+    </div>
+    <div class="highlight">
+      <h4>Durable Materials</h4>
+      <p>We use high-quality leather and reinforced stitching to ensure longevity and comfort.</p>
+    </div>
+    <div class="highlight">
+      <h4>Timeless Design</h4>
+      <p>Classic yet modern designs that elevate any outfit, perfect for every occasion.</p>
+    </div>
+  </div>
+</section>
+
+{% include 'includes/footer.html' %}
+
+{% endblock %}

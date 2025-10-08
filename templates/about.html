@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+.about-container {
+    max-width: 900px;
+    margin: 50px auto;
+    background: #1a1a1a;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 20px;
+    padding: 40px;
+    color: #e0e0e0;
+    font-family: 'Urbanist', sans-serif;
+}
+
+.about-container h1 {
+    color: #d4af37;
+    font-weight: 700;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.about-container p {
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #ccc;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .about-container {
+        padding: 30px 20px;
+    }
+
+    .about-container p {
+        font-size: 0.95rem;
+    }
+}
+</style>
+
+<div class="about-container">
+  <h1>About Rare Leather</h1>
+  
+  <p>Rare Leather is a premier Nigerian leather footwear brand, dedicated to handcrafted excellence and timeless design. Every pair is carefully curated using premium leather, ensuring durability, comfort, and a unique style statement.</p>
+
+  <p>Our mission is to bring high-quality, stylish leather shoes to discerning customers who appreciate the art of fine footwear. From casual wear to formal occasions, our designs reflect sophistication and craftsmanship.</p>
+
+  <p>We source our materials responsibly and support local artisans, promoting sustainability and the local economy. Rare Leather is not just a brand—it’s a legacy of quality and luxury.</p>
+</div>
+
+{% include 'includes/footer.html' %}
+
+{% endblock %}

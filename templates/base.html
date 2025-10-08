@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rare Leather</title>
+  <link rel="icon" href="{{ MEDIA_URL }}icon.png" type="image/png">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #c6a04f;
+      --dark-bg: #0f0f0f;
+      --text-light: #f8f5f2;
+      --text-muted: #b8b8b8;
+    }
+
+    body {
+      margin: 0;
+      background: var(--dark-bg);
+      color: var(--text-light);
+      font-family: 'Manrope', sans-serif;
+    }
+
+    /* NAVBAR BASE */
+    header {
+      width: 100%;
+      background: #141414;
+      border-bottom: 1px solid rgba(198, 160, 79, 0.25);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    /* BRAND */
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    /* NAV LINKS */
+    nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--text-light);
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      transition: all 0.3s ease;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    nav a:hover {
+      color: var(--gold);
+      background: rgba(198, 160, 79, 0.1);
+    }
+
+    /* HAMBURGER MENU */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+    }
+
+    .menu-toggle span {
+      width: 25px;
+      height: 2px;
+      background: var(--gold);
+      transition: all 0.3s ease;
+    }
+
+    /* MOBILE MENU */
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        text-align: center;
+        background: #111;
+        margin-top: 1rem;
+        border-top: 1px solid rgba(198, 160, 79, 0.2);
+        padding: 1rem 0;
+      }
+
+      nav.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+
+      header {
+        /* flex-direction: column; */
+        align-items: flex-start;
+        padding: 1rem 1.5rem;
+      }
+
+      .brand {
+        font-size: 1.5rem;
+        margin-bottom: 0.4rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="/" class="brand">RARE LEATHER</a>
+
+    <div class="menu-toggle" id="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <nav id="nav">
+      <a href="/">Home</a>
+      <a href="{% url 'catalog:product_list' %}">Shop</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+        <a href="{% url 'cart:cart_detail' %}">My Cart</a>
+        <a href="{% url 'accounts:logout' %}">Logout</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}">Login</a>
+        <a href="{% url 'accounts:register' %}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <script>
+    const toggle = document.getElementById('menu-toggle');
+    const nav = document.getElementById('nav');
+    toggle.addEventListener('click', () => nav.classList.toggle('active'));
+  </script>
+</body>
+</html>

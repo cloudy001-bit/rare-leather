@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background-color: #0f0f0f;
+    color: #e0e0e0;
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .error-container {
+    text-align: center;
+    padding: 100px 20px;
+  }
+
+  .error-container h1 {
+    font-size: 6rem;
+    font-weight: 700;
+    color: #d4af37;
+    margin-bottom: 20px;
+  }
+
+  .error-container h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+
+  .error-container p {
+    font-size: 1.1rem;
+    color: #ccc;
+    margin-bottom: 30px;
+  }
+
+  .error-container a {
+    text-decoration: none;
+    background: transparent;
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .error-container a:hover {
+    background: #d4af37;
+    color: #0f0f0f;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .error-container h1 {
+      font-size: 4rem;
+    }
+
+    .error-container h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+<div class="error-container">
+  <h1>404</h1>
+  <h2>Page Not Found</h2>
+  <p>Sorry, the page you are looking for doesn’t exist or has been moved.</p>
+  <a href="{% url 'home' %}">Back to Home</a>
+</div>
+
+{% include 'includes/footer.html' %}
+
+{% endblock %}
