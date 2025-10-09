@@ -91,18 +91,11 @@ WSGI_APPLICATION = 'shoestore.wsgi.application'
 
 # DATABASE
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',                     # your database name
-        'USER': 'postgres',                     # your database username
-        'PASSWORD': 'drvUhiboAkjemIUHiyXIVuAeLkcXWUoe',        # your database password
-        'HOST': 'postgres.railway.internal',  # Railway host
-        'PORT': '5432',                        # Railway port
-        'CONN_MAX_AGE': 600,
-        'OPTIONS': {
-            'sslmode': 'require',               # SSL required by Railway
-        },
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='sqlite:///db.sqlite3'),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 CSRF_TRUSTED_ORIGINS = [
