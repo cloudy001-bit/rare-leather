@@ -19,6 +19,8 @@ from django.urls import path, include
 from . import views
 
 from django.conf.urls import handler400, handler403, handler404, handler500
+from django.conf import settings
+from django.conf.urls.static import static
 
 # from django.conf.urls import handler404
 # from django.shortcuts import render
@@ -40,22 +42,16 @@ urlpatterns = [
     path("contact/", views.contact_view, name="contact")
 ]
 
-from django.conf import settings
-from django.conf.urls.static import static
-
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-else:
-    # 👇 allow serving media manually on Render
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# if settings.DEBUG:
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# else:
+#     # 👇 allow serving media manually on Render
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler400 = 'shoestore.views.bad_request'
 handler403 = 'shoestore.views.permission_denied'
 handler404 = 'shoestore.views.page_not_found'
 handler500 = 'shoestore.views.server_error'
-
-
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-    
-# ]

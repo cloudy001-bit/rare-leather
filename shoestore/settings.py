@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
 SECRET_KEY = config('SECRET_KEY', default='your-dev-secret-key')
-DEBUG = os.environ.get("DEBUG")
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 ALLOWED_HOSTS = ['127.0.0.1', 'rare-leather-production.up.railway.app']
 
 # APPS
@@ -24,15 +24,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django.contrib.humanize',
-    # 'storages',  # ✅ Added for ImageKit
     'accounts',
     'orders',
     'cart',
     'catalog',
     'payments',
     'settings',
-    'cloudinary',
-    'cloudinary_storage',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -103,7 +100,6 @@ DATABASES = {
 
 CSRF_TRUSTED_ORIGINS = [
     'https://rare-leather-production.up.railway.app',
-    # 'https://www.yourcustomdomain.com',
 ]
 
 # STATIC FILES
@@ -111,28 +107,13 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-}
-
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-# Media URL (Cloudinary handles this automatically)
+# MEDIA FILES (Persistent storage on Railway)
 MEDIA_URL = '/media/'
+MEDIA_ROOT = Path('/media/')  # Railway persistent volume
 
-# MEDIA STORAGE (ImageKit)
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# AWS_ACCESS_KEY_ID = os.environ.get('IMAGEKIT_PUBLIC_KEY')
-# AWS_SECRET_ACCESS_KEY = os.environ.get('IMAGEKIT_PRIVATE_KEY')
-# AWS_STORAGE_BUCKET_NAME = 'rare-leather'  # can be any placeholder name
-# AWS_S3_ENDPOINT_URL = f"https://ik.imagekit.io/{os.environ.get('IMAGEKIT_ID')}/"
-# AWS_S3_REGION_NAME = None  # not used for ImageKit
-# AWS_QUERYSTRING_AUTH = False
-# AWS_DEFAULT_ACL = None
-
-# MEDIA_URL = f"https://ik.imagekit.io/{os.environ.get('IMAGEKIT_ID')}/"
+# Fallback for local development
+if not MEDIA_ROOT.exists():
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
