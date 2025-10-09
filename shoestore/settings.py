@@ -40,12 +40,12 @@ LOGOUT_REDIRECT_URL = 'catalog:product_list'
 
 # EMAIL
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_HOST = 'smtp.resend.com'
+EMAIL_PORT = 587  # You can also use 465 or 2587 for SSL/TLS
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "omanmannsh@gmail.com"
-EMAIL_HOST_PASSWORD = "jzqp ieui iuws qdan"
-DEFAULT_FROM_EMAIL = f"Rare Leather <{EMAIL_HOST_USER}>"
+EMAIL_HOST_USER = 'resend'
+EMAIL_HOST_PASSWORD = "re_Cd7JPUaV_Kjg17gCqbiKJn3eiE5zPejBf"  # Store your API key securely
+DEFAULT_FROM_EMAIL = 'noreply@rareleather.com'  # Replace with your domain
 
 # PAYSTACK
 PAYSTACK_PUBLIC_KEY = os.environ.get("PAYSTACK_PUBLIC_KEY")
