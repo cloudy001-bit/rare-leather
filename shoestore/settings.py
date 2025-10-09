@@ -45,7 +45,7 @@ EMAIL_PORT = 587  # You can also use 465 or 2587 for SSL/TLS
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'resend'
 EMAIL_HOST_PASSWORD = "re_Cd7JPUaV_Kjg17gCqbiKJn3eiE5zPejBf"  # Store your API key securely
-DEFAULT_FROM_EMAIL = 'noreply@rareleather.com'  # Replace with your domain
+DEFAULT_FROM_EMAIL = 'noreply@rare-leather-production.up.railway.app'  # Replace with your domain
 
 # PAYSTACK
 PAYSTACK_PUBLIC_KEY = os.environ.get("PAYSTACK_PUBLIC_KEY")

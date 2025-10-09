@@ -14,7 +14,10 @@ import uuid
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from settings.models import SiteSettings
+from resend import Resend
 
+# Initialize the Resend client
+resend_client = Resend(api_key=settings.RESEND_API_KEY)
 
 def logout_view(request):
     logout(request)
@@ -52,18 +55,16 @@ def signup_view(request):
         subject = "Verify your email - Welcome to Rare Leather"
 
         try:
-            email_msg = EmailMultiAlternatives(
-                subject,
-                text_content,
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
+            # Send email via Resend
+            resend_client.emails.send(
+                from_="noreply@rare-leather-production.up.railway.app",  # must be verified domain
+                to=[email],
+                subject=subject,
+                html=html_content,
+                text=text_content
             )
-            email_msg.attach_alternative(html_content, "text/html")
-            email_msg.send(fail_silently=False)
 
             messages.success(request, f"A verification link has been sent to {email}. Check your inbox.")
-        except BadHeaderError:
-            messages.error(request, "Invalid header found while sending email.")
         except Exception as e:
             messages.error(request, f"Error sending email: {e}")
 
