@@ -56,13 +56,13 @@ def signup_view(request):
 
         try:
             # Send email via Resend
-            resend.Emails.send(
-                from_sender="onboarding@resend.dev",  # must be verified domain
-                to=[email],
-                subject=subject,
-                html=html_content,
-                text=text_content
-            )
+            resend.Emails.send({
+                "from": "onboarding@resend.dev",
+                "to": [email],
+                "subject": subject,
+                "html": html_content,
+                "text": text_content
+            })
 
             messages.success(request, f"A verification link has been sent to {email}. Check your inbox.")
         except Exception as e:
