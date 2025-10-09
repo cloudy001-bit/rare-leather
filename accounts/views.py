@@ -14,10 +14,10 @@ import uuid
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from settings.models import SiteSettings
-from resend import Emails
+import resend
 
 # Initialize the Resend client
-resend_client = Emails(api_key=settings.RESEND_API_KEY)
+resend.api_key = settings.RESEND_API_KEY
 
 def logout_view(request):
     logout(request)
@@ -56,7 +56,7 @@ def signup_view(request):
 
         try:
             # Send email via Resend
-            resend_client.send(
+            resend.Emails.send(
                 from_="noreply@rare-leather-production.up.railway.app",  # must be verified domain
                 to=[email],
                 subject=subject,
