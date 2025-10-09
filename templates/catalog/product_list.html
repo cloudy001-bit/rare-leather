@@ -180,7 +180,7 @@ body {
     {% if products %}
       {% for product in products %}
         <div class="product-card">
-          <a href="{% url 'catalog:product_detail' product.slug %}">
+          <a href="{% url 'catalog:product_detail' product.slug %}" style="text-decoration: none;" >
             {% if product.images.first %}
               <img src="{{ product.images.first.image.url }}" alt="{{ product.title }}">
             {% else %}
