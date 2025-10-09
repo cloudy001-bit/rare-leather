@@ -57,7 +57,7 @@ def signup_view(request):
         try:
             # Send email via Resend
             resend.Emails.send(
-                from_="onboarding@resend.dev",  # must be verified domain
+                from_sender="onboarding@resend.dev",  # must be verified domain
                 to=[email],
                 subject=subject,
                 html=html_content,
