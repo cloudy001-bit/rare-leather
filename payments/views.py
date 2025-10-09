@@ -1,20 +1,21 @@
 import uuid
 import requests
 import logging
+import resend
 from django.conf import settings
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-# from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
+from django.utils.html import strip_tags
 from django.utils import timezone
-from django.template.loader import render_to_string
-
 from orders.models import Order
 from .models import Payment
 
 logger = logging.getLogger(__name__)
+
+# Initialize Resend client
+resend.api_key = settings.RESEND_API_KEY
 
 
 @login_required
@@ -22,18 +23,17 @@ def initialize_payment(request, order_id):
     """Start or restart a Paystack transaction for an order."""
     order = get_object_or_404(Order, id=order_id, user=request.user)
 
-    # 🔒 Prevent duplicate payments
     if order.payment_status == 'paid':
         messages.info(request, "This order has already been paid for.")
         return redirect('orders:order_confirmation', order_id=order.id)
 
-    # ✅ Generate a unique reference
+    # Generate unique reference
     reference = f"ORD-{order.id}-{uuid.uuid4().hex[:8]}"
     order.reference = reference
     order.save(update_fields=["reference"])
 
-    # ✅ Create or update Payment
-    payment, _ = Payment.objects.update_or_create(
+    # Create or update payment record
+    Payment.objects.update_or_create(
         order=order,
         defaults={
             "user": request.user,
@@ -43,7 +43,6 @@ def initialize_payment(request, order_id):
         },
     )
 
-    # ✅ Prepare Paystack initialization
     headers = {
         "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
         "Content-Type": "application/json",
@@ -51,18 +50,13 @@ def initialize_payment(request, order_id):
 
     data = {
         "email": order.email,
-        "amount": int(order.total_price * 100),  # Paystack expects kobo
+        "amount": int(order.total_price * 100),
         "reference": reference,
-        "callback_url": request.build_absolute_uri(f"/payments/verify/{reference}/"),
+        "callback_url": request.build_absolute_uri("/payments/verify/"),
     }
 
     try:
-        response = requests.post(
-            "https://api.paystack.co/transaction/initialize",
-            json=data,
-            headers=headers,
-            timeout=10,
-        )
+        response = requests.post("https://api.paystack.co/transaction/initialize", json=data, headers=headers, timeout=10)
         res_data = response.json()
     except requests.exceptions.RequestException as e:
         logger.error(f"Paystack init failed: {e}")
@@ -77,18 +71,19 @@ def initialize_payment(request, order_id):
 
 
 @login_required
-def verify_payment(request, reference):
-    """Verify Paystack transaction and update order/payment status."""
-    reference = reference or request.GET.get('trxref') or request.GET.get('reference')
+def verify_payment(request):
+    """Verify Paystack transaction and send notifications via Resend."""
+    reference = request.GET.get('reference') or request.GET.get('trxref')
+
+    if not reference:
+        messages.error(request, "Invalid payment reference.")
+        return redirect('orders:order_list')
+
     order = get_object_or_404(Order, reference=reference, user=request.user)
     headers = {"Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
 
     try:
-        response = requests.get(
-            f"https://api.paystack.co/transaction/verify/{reference}",
-            headers=headers,
-            timeout=10,
-        )
+        response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", headers=headers, timeout=10)
         res_data = response.json()
     except requests.exceptions.RequestException as e:
         logger.error(f"Paystack verification failed: {e}")
@@ -97,8 +92,8 @@ def verify_payment(request, reference):
 
     payment = Payment.objects.filter(reference=reference).first()
 
+    # ✅ Successful Payment
     if res_data.get("status") and res_data["data"]["status"] == "success":
-        # ✅ Update order and payment
         order.payment_status = "paid"
         order.status = "processing"
         order.save(update_fields=["payment_status", "status"])
@@ -107,43 +102,44 @@ def verify_payment(request, reference):
             payment.verified = True
             payment.save(update_fields=["verified"])
 
-        # === 📧 SEND RECEIPT TO CUSTOMER ===
+        # === 📧 CUSTOMER RECEIPT (Resend) ===
         try:
             subject = f"Payment Receipt — Order #{order.id}"
-            context = {"order": order}
-            message = render_to_string("emails/payment_receipt.html", context)
-            email = EmailMessage(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [order.email],
-            )
-            email.content_subtype = "html"
-            email.send(fail_silently=False)
-        except Exception as e:
-            logger.error(f"Error sending customer receipt: {e}")
+            html_content = render_to_string("emails/payment_receipt.html", {"order": order})
+            text_content = strip_tags(html_content)
 
-        # === 📧 SEND EMAIL TO ADMIN ===
+            resend.Emails.send({
+                "from": "onboarding@resend.dev",
+                "to": [order.email],
+                "subject": subject,
+                "html": html_content,
+                "text": text_content
+            })
+        except Exception as e:
+            logger.error(f"Error sending customer receipt via Resend: {e}")
+
+        # === 📧 ADMIN ALERT (Resend) ===
         try:
-                admin_subject = f"🟢 New Paid Order — #{order.id}"
-                admin_context = {
-                    "order": order,
-                    "admin_url": request.build_absolute_uri(f"/admin/orders/order/{order.id}/"),
-                    "now": timezone.now(),
-                }
-                admin_message = render_to_string("emails/admin_new_order.html", admin_context)
-                email = EmailMessage(
-                    subject=admin_subject,
-                    body=admin_message,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=[settings.ADMIN_EMAIL],
-                )
-                email.content_subtype = "html"  # Important to render HTML
-                email.send(fail_silently=True)
-        except Exception as e:
-            logger.error(f"Error sending admin notification: {e}")
+            admin_subject = f"🟢 New Paid Order — #{order.id}"
+            admin_context = {
+                "order": order,
+                "admin_url": request.build_absolute_uri(f"/admin/orders/order/{order.id}/"),
+                "now": timezone.now(),
+            }
+            admin_html = render_to_string("emails/admin_new_order.html", admin_context)
+            admin_text = strip_tags(admin_html)
 
-        # === 💬 TELEGRAM NOTIFICATION ===
+            resend.Emails.send({
+                "from": "onboarding@resend.dev",
+                "to": [settings.ADMIN_EMAIL],
+                "subject": admin_subject,
+                "html": admin_html,
+                "text": admin_text
+            })
+        except Exception as e:
+            logger.error(f"Error sending admin notification via Resend: {e}")
+
+        # === 💬 Telegram Alert (Optional) ===
         if getattr(settings, "TELEGRAM_BOT_TOKEN", None) and getattr(settings, "TELEGRAM_CHAT_ID", None):
             telegram_message = (
                 f"✅ *New Paid Order!*\n"
@@ -169,7 +165,7 @@ def verify_payment(request, reference):
         messages.success(request, "Payment verified successfully! Your order is now processing.")
         return redirect('orders:order_confirmation', order_id=order.id)
 
-    # ❌ Payment failed
+    # ❌ Failed Payment
     order.payment_status = "failed"
     order.save(update_fields=["payment_status"])
     messages.warning(request, "Payment verification failed or was incomplete.")
