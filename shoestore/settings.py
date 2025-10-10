@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
 SECRET_KEY = config('SECRET_KEY', default='your-dev-secret-key')
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = ['127.0.0.1', 'rare-leather-production.up.railway.app']
 
 # APPS
@@ -109,11 +109,12 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # MEDIA FILES (Persistent storage on Railway)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = Path('/media/')  # Railway persistent volume
 
-# Fallback for local development
-# if not MEDIA_ROOT.exists():
-# MEDIA_ROOT = BASE_DIR / 'media'
+# Use Railway mounted volume if it exists
+if os.path.exists('/media'):
+    MEDIA_ROOT = Path('/media')
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
