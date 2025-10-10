@@ -44,7 +44,7 @@ EMAIL_HOST = 'smtp.resend.com'
 EMAIL_PORT = 587  # You can also use 465 or 2587 for SSL/TLS
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'resend'
-RESEND_API_KEY = "re_Cd7JPUaV_Kjg17gCqbiKJn3eiE5zPejBf"  # Store your API key securely
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY")  # Store your API key securely
 DEFAULT_FROM_EMAIL = 'noreply@rareleather.com.ng'  # Replace with your domain
 
 # PAYSTACK
