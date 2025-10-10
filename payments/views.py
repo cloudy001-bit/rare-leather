@@ -148,7 +148,7 @@ def verify_payment(request):
             admin_text = strip_tags(admin_html)
 
             resend.Emails.send({
-                "from": "rareleather@rareleather.com.ng",
+                "from": "Rare Leather <noreply@rareleather.com.ng>",
                 "to": [settings.ADMIN_EMAIL],
                 "subject": admin_subject,
                 "html": admin_html,

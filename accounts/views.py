@@ -57,7 +57,7 @@ def signup_view(request):
         try:
             # Send email via Resend
             resend.Emails.send({
-                "from": "rareleather@rareleather.com.ng",
+                "from": "Rare Leather <noreply@rareleather.com.ng>",
                 "to": [email],
                 "subject": subject,
                 "html": html_content,

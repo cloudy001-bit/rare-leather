@@ -7,6 +7,12 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
 
+import resend
+from django.utils.html import strip_tags
+from django.conf import settings
+
+resend.api_key = settings.RESEND_API_KEY
+
 class Order(models.Model):
     ORDER_STATUS_CHOICES = (
         ('pending', 'Pending'),
@@ -59,15 +65,25 @@ class OrderItem(models.Model):
 
 @receiver(post_save, sender=Order)
 def send_order_completed_email(sender, instance, **kwargs):
+    """
+    Sends an email to the user when an order is marked as completed.
+    """
     if instance.status == "completed":
         subject = f"Your Order #{instance.id} is Completed 🎉"
+        
+        # Prepare HTML and plain-text versions
         context = {"order": instance}
-        message = render_to_string("emails/order_completed.html", context)
-        email = EmailMessage(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [instance.email],
-        )
-        email.content_subtype = "html"
-        email.send(fail_silently=True)
+        html_content = render_to_string("emails/order_completed.html", context)
+        text_content = strip_tags(html_content)
+
+        try:
+            resend.Emails.send({
+                "from": "Rare Leather <noreply@rareleather.com.ng>",  # your verified sender domain in Resend
+                "to": [instance.email],
+                "subject": subject,
+                "html": html_content,
+                "text": text_content
+            })
+        except Exception as e:
+            # Optional: log this error
+            print(f"Error sending order completed email: {e}")
