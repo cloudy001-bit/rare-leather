@@ -78,7 +78,7 @@ def send_order_completed_email(sender, instance, **kwargs):
 
         try:
             resend.Emails.send({
-                "from": "Rare Leather <noreply@rareleather.com.ng>",  # your verified sender domain in Resend
+                "from": "noreply@rareleather.com.ng",  # your verified sender domain in Resend
                 "to": [instance.email],
                 "subject": subject,
                 "html": html_content,
