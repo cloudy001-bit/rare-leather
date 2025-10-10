@@ -48,7 +48,7 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY")  # Store your API key securely
 DEFAULT_FROM_EMAIL = 'noreply@rareleather.com.ng'  # Replace with your domain
 
 # PAYSTACK
-PAYSTACK_PUBLIC_KEY = "re_PqiV3819_Jd7ZiQFf8WngPuPuzo5dY9yq"
+PAYSTACK_PUBLIC_KEY = os.environ.get("PAYSTACK_PUBLIC_KEY")
 PAYSTACK_SECRET_KEY = os.environ.get("PAYSTACK_SECRET_KEY")
 PAYSTACK_CALLBACK_URL = os.environ.get("PAYSTACK_CALLBACK_URL")
 
