@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = config('SECRET_KEY', default='your-dev-secret-key')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = ['127.0.0.1', 'rare-leather-production.up.railway.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'rare-leather-production.up.railway.app', "rareleather.com.ng"]
 
 # APPS
 INSTALLED_APPS = [
@@ -45,7 +45,7 @@ EMAIL_PORT = 587  # You can also use 465 or 2587 for SSL/TLS
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'resend'
 RESEND_API_KEY = "re_Cd7JPUaV_Kjg17gCqbiKJn3eiE5zPejBf"  # Store your API key securely
-DEFAULT_FROM_EMAIL = 'noreply@rare-leather-production.up.railway.app'  # Replace with your domain
+DEFAULT_FROM_EMAIL = 'noreply@rareleather.com.ng'  # Replace with your domain
 
 # PAYSTACK
 PAYSTACK_PUBLIC_KEY = os.environ.get("PAYSTACK_PUBLIC_KEY")
@@ -100,6 +100,7 @@ DATABASES = {
 
 CSRF_TRUSTED_ORIGINS = [
     'https://rare-leather-production.up.railway.app',
+    'https://rareleather.com.ng',
 ]
 
 # STATIC FILES
