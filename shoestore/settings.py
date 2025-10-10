@@ -109,11 +109,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # MEDIA FILES (Persistent storage on Railway)
 MEDIA_URL = '/media/'
-# MEDIA_ROOT = Path('/media/')  # Railway persistent volume
+MEDIA_ROOT = Path('/media/')  # Railway persistent volume
 
 # Fallback for local development
 # if not MEDIA_ROOT.exists():
-MEDIA_ROOT = BASE_DIR / 'media'
+# MEDIA_ROOT = BASE_DIR / 'media'
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
