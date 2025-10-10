@@ -43,20 +43,33 @@ def initialize_payment(request, order_id):
         },
     )
 
+    # ✅ Use Live Secret Key automatically when DEBUG=False
+    secret_key = settings.PAYSTACK_SECRET_KEY
     headers = {
-        "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
+        "Authorization": f"Bearer {secret_key}",
         "Content-Type": "application/json",
     }
 
+    # ✅ Build correct callback for environment
+    if settings.DEBUG:
+        callback_url = request.build_absolute_uri("/payments/verify/")
+    else:
+        callback_url = settings.PAYSTACK_CALLBACK_URL or request.build_absolute_uri("/payments/verify/")
+
     data = {
         "email": order.email,
-        "amount": int(order.total_price * 100),
+        "amount": int(order.total_price * 100),  # Paystack expects amount in kobo
         "reference": reference,
-        "callback_url": request.build_absolute_uri("/payments/verify/"),
+        "callback_url": callback_url,
     }
 
     try:
-        response = requests.post("https://api.paystack.co/transaction/initialize", json=data, headers=headers, timeout=10)
+        response = requests.post(
+            "https://api.paystack.co/transaction/initialize",
+            json=data,
+            headers=headers,
+            timeout=10,
+        )
         res_data = response.json()
     except requests.exceptions.RequestException as e:
         logger.error(f"Paystack init failed: {e}")
@@ -66,6 +79,7 @@ def initialize_payment(request, order_id):
     if res_data.get("status") and "authorization_url" in res_data["data"]:
         return redirect(res_data["data"]["authorization_url"])
 
+    logger.error(f"Paystack init failed: {res_data}")
     messages.error(request, "Payment initialization failed. Please try again.")
     return redirect('orders:order_confirmation', order_id=order.id)
 
@@ -83,7 +97,11 @@ def verify_payment(request):
     headers = {"Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
 
     try:
-        response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", headers=headers, timeout=10)
+        response = requests.get(
+            f"https://api.paystack.co/transaction/verify/{reference}",
+            headers=headers,
+            timeout=10,
+        )
         res_data = response.json()
     except requests.exceptions.RequestException as e:
         logger.error(f"Paystack verification failed: {e}")
