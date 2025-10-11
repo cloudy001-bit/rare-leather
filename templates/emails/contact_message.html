@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Contact Message | Rare Leather</title>
+  <style>
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background-color: #f8f5f2;
+      color: #222;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .header {
+      background-color: #1a1a1a;
+      color: #d4af37;
+      text-align: center;
+      padding: 25px 20px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .content {
+      padding: 30px 25px;
+      line-height: 1.6;
+    }
+    .content p {
+      margin: 10px 0;
+    }
+    .message-box {
+      background: #f3f3f3;
+      border-left: 4px solid #d4af37;
+      padding: 15px;
+      border-radius: 8px;
+      font-style: italic;
+      margin-top: 15px;
+    }
+    .footer {
+      background-color: #1a1a1a;
+      color: #aaa;
+      text-align: center;
+      font-size: 12px;
+      padding: 15px;
+    }
+    .footer a {
+      color: #d4af37;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>New Contact Message</h1>
+    </div>
+    <div class="content">
+      <p><strong>Name:</strong> {{ name }}</p>
+      <p><strong>Email:</strong> {{ email }}</p>
+      <div class="message-box">
+        {{ message }}
+      </div>
+      <p style="margin-top: 20px;">You received this message via the Rare Leather contact form.</p>
+    </div>
+    <div class="footer">
+      <p>&copy; {{ now|date:"Y" }} Rare Leather — Crafted by Hand. Styled for Legacy.</p>
+      <p><a href="https://rareleather.com.ng">rareleather.com.ng</a></p>
+    </div>
+  </div>
+</body>
+</html>
